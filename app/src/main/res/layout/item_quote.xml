@@ -40,8 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/tvDate"
             android:layout_marginTop="8dp"
-            android:text="&quot;famous-quotes&quot; &quot;inspirational&quot;"
-            android:textColor="#808080"/>
+            android:text="&quot;famous-quotes&quot; &quot;inspirational&quot;" />
 
     </RelativeLayout>
 
