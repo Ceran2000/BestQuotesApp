@@ -9,7 +9,7 @@ public class Result {
 
     @SerializedName("tags")
     @Expose
-    private List<String> tags = null;
+    private List<String> tags;
     @SerializedName("_id")
     @Expose
     private String id;
