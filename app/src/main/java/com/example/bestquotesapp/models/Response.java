@@ -24,7 +24,7 @@ public class Response {
     private Integer lastItemIndex;
     @SerializedName("results")
     @Expose
-    private List<Result> results;
+    private List<Quote> results;
 
     public Integer getCount() {
         return count;
@@ -66,11 +66,11 @@ public class Response {
         this.lastItemIndex = lastItemIndex;
     }
 
-    public List<Result> getResults() {
+    public List<Quote> getResults() {
         return results;
     }
 
-    public void setResults(List<Result> results) {
+    public void setResults(List<Quote> results) {
         this.results = results;
     }
 
