@@ -15,7 +15,7 @@ import java.util.List;
 
 public class QuotesAdapter extends RecyclerView.Adapter<QuotesAdapter.ViewHolder> {
 
-    private List<Quote> quotesList;
+    private final List<Quote> quotesList;
 
     public QuotesAdapter(List<Quote> quotesList){
         this.quotesList = quotesList;
@@ -35,12 +35,13 @@ public class QuotesAdapter extends RecyclerView.Adapter<QuotesAdapter.ViewHolder
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.getTvContent().setText(quotesList.get(position).getContent());
         holder.getTvAuthor().setText(quotesList.get(position).getAuthor());
-        holder.getTvDate().setText(quotesList.get(position).getDateAdded());
+        String dateAdded = "Added: " + quotesList.get(position).getDateAdded();
+        holder.getTvDate().setText(dateAdded);
         StringBuilder stringBuilder = new StringBuilder("");
         for (String hashtag: quotesList.get(position).getTags()) {
-            stringBuilder.append(hashtag).append(" ");                                              //TODO: last string without adding space
+            stringBuilder.append("#").append(hashtag).append(" ");
         }
-        holder.getTvHashtags().setText(stringBuilder);
+        holder.getTvHashtags().setText(stringBuilder.toString().trim());
     }
 
     @Override
