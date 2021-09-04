@@ -19,14 +19,14 @@ import retrofit2.Callback;
 
 public class MainActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerView;
+    //private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        findViews();
+        /*findViews();
 
         QuotableAPI quotableAPI = APIClient.getRetrofitInstance().create(QuotableAPI.class);
         Call<Response> call = quotableAPI.getQuotesResponse();
@@ -40,17 +40,15 @@ public class MainActivity extends AppCompatActivity {
             public void onFailure(Call<Response> call, Throwable t) {
                 Toast.makeText(MainActivity.this, "Can't load data...", Toast.LENGTH_LONG).show();
             }
-        });
+        });*/
     }
 
-    private void findViews(){
-        recyclerView = findViewById(R.id.recyclerViewQuotes);
-    }
+    /*private void findViews(){ recyclerView = findViewById(R.id.recyclerViewQuotes); }*/
 
-    private void generateQuotesList(List<Quote> quotesList) {
+    /*private void generateQuotesList(List<Quote> quotesList) {
         QuotesAdapter quotesAdapter = new QuotesAdapter(quotesList);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(quotesAdapter);
-    }
+    }*/
 }
