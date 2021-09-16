@@ -2,13 +2,18 @@ package com.example.bestquotesapp.ui;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.bestquotesapp.APIClient;
@@ -29,6 +34,9 @@ public class QuotesFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private FloatingActionButton fab;
+    private Button refresh;
+
+    private QuotesViewModel viewModel;
 
     public QuotesFragment() {
         super(R.layout.fragment_quotes);
@@ -37,6 +45,8 @@ public class QuotesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i("FRAGMENT: ", "onCreate");
+
     }
 
     @Override
@@ -48,32 +58,44 @@ public class QuotesFragment extends Fragment {
         findViews(root);
         setListeners();
 
-        QuotableAPI quotableAPI = APIClient.getRetrofitInstance().create(QuotableAPI.class);
-        Call<Response> call = quotableAPI.getQuotesResponse();
-        call.enqueue(new Callback<Response>() {
-            @Override
-            public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
-                generateQuotesList(response.body().getResults());
-            }
+        Log.i("FRAGMENT: ", "onCreateView");
 
-            @Override
-            public void onFailure(Call<Response> call, Throwable t) {
-                Toast.makeText(getContext(), "Can't load data...", Toast.LENGTH_LONG).show();
+        return root;
+    }
+
+    //TODO: onCreateView czy onViewCreated?
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        viewModel = new ViewModelProvider(requireActivity()).get(QuotesViewModel.class);
+        viewModel.getQuotes().observe(getViewLifecycleOwner(), quotes ->{
+            if(quotes.getCount() != 0 && quotes != null) {
+                Log.i("GENEROWANIE CYTATOW: ", quotes.getResults().get(0).toString());
+                generateQuotesList(quotes.getResults());
             }
         });
 
-
-        return root;
+        Log.i("FRAGMENT: ", "onViewCreated");
     }
 
     private void findViews(View root){
         recyclerView = root.findViewById(R.id.recyclerViewQuotes);
         fab = root.findViewById(R.id.fab);
+        refresh = root.findViewById(R.id.button_refresh);
     }
 
     private void setListeners(){
+
         fab.setOnClickListener(v -> {
             new FilterDialogFragment().show(getChildFragmentManager(), FilterDialogFragment.TAG);
+        });
+
+        refresh.setOnClickListener(v -> {
+            if (viewModel.getQuotes().getValue() != null) {
+                Log.i("REFRESH: ", viewModel.getQuotes().getValue().getResults().get(0).toString());
+            } else {
+                Log.i("REFRESH: ", "null");
+            }
         });
     }
 
@@ -83,4 +105,5 @@ public class QuotesFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(quotesAdapter);
     }
+
 }
