@@ -46,13 +46,10 @@ public class FilterDialogFragment extends DialogFragment {
 
     private void setListeners(){
         searchByAuthorBtn.setOnClickListener(v -> {
+            viewModel.clearOptions();
             String author = etAuthor.getText().toString();
-            getQuotesByAuthor(author);
+            viewModel.setOptions("author", author);
             dismiss();
         });
-    }
-
-    private void getQuotesByAuthor(String author){
-        viewModel.setOptions("author", author);
     }
 }

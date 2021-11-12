@@ -47,6 +47,10 @@ public class QuotesViewModel extends ViewModel {
     }
     public LiveData<Map<String, String>> getOptions(){ return options; }
 
+    public void clearOptions(){
+        options.getValue().clear();
+    }
+
 
     class QuotesAsyncTask extends AsyncTask<Map<String, String>, Void, Void>{
 

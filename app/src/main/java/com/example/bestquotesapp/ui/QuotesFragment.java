@@ -104,6 +104,7 @@ public class QuotesFragment extends Fragment {
                 button.setLayoutParams(params);
                 button.setOnClickListener(v -> {
                     Log.i("PAGE: ", button.getTag().toString());
+                    viewModel.setOptions("page", v.getTag().toString());
                 });
                 pagesListLayout.addView(button);
                 i++;
@@ -119,6 +120,7 @@ public class QuotesFragment extends Fragment {
                 button.setLayoutParams(params);
                 button.setOnClickListener(v -> {
                     Log.i("PAGE: ", button.getTag().toString());
+                    viewModel.setOptions("page", v.getTag().toString());
                 });
                 pagesListLayout.addView(button);
                 Log.i("CREATED PAGE: ", String.valueOf(i));
