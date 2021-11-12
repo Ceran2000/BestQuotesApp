@@ -28,32 +28,35 @@ public class QuotesViewModel extends ViewModel {
         options = new MutableLiveData<>();
         options.setValue(new HashMap<>());
         quotes = new MutableLiveData<>();
+
     }
 
     public LiveData<QuotesResponse> getQuotes(){
         if (quotes.getValue() == null){
-            new QuotesAsyncTask().execute();
+            fetchQuotesFromServer();
         }
         return quotes;
     }
 
-    public void setQuotes(QuotesResponse quotesResponse){
-        quotes.postValue(quotesResponse);
-    }
-
-    public void setOptions(String key, String value){
-        Objects.requireNonNull(options.getValue()).put(key, value);
+    public void fetchQuotesFromServer(){
         new QuotesAsyncTask().execute();
     }
 
-    public LiveData<Map<String, String>> getOptions(){ return options; }
-
-    public void clearOptions(){
-        options.getValue().clear();
+    public LiveData<Map<String, String>> getOptions(){
+        return options;
     }
 
+    public void addOption(String key, String value){
+        if (options.getValue() != null)
+            options.getValue().put(key, value);
+    }
 
-    class QuotesAsyncTask extends AsyncTask<Void, Void, Void>{
+    public void clearOptions(){
+        if (options.getValue() != null)
+            options.getValue().clear();
+    }
+
+    private class QuotesAsyncTask extends AsyncTask<Void, Void, Void>{
 
         @SafeVarargs
         @Override
@@ -61,13 +64,12 @@ public class QuotesViewModel extends ViewModel {
             try {
                 QuotesResponse quotesResponse = repository.getQuotes(options.getValue());
                 if (quotesResponse != null)
-                    setQuotes(quotesResponse);
+                    quotes.postValue(quotesResponse);
                 else Log.i("FAILED: ", "QUOTES RESPONSE IS NULL!");
             } catch (IOException e) {
                 e.printStackTrace();
             }
             return null;
         }
-
     }
 }

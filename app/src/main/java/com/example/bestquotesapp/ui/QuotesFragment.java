@@ -1,5 +1,7 @@
 package com.example.bestquotesapp.ui;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -9,12 +11,16 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.renderscript.ScriptGroup;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.example.bestquotesapp.R;
 import com.example.bestquotesapp.models.Quote;
@@ -95,7 +101,8 @@ public class QuotesFragment extends Fragment {
                 Button button = setPageButton(String.valueOf(i));
                 button.setLayoutParams(params);
                 button.setOnClickListener(v -> {
-                    viewModel.setOptions("page", v.getTag().toString());
+                    viewModel.addOption("page", v.getTag().toString());
+                    viewModel.fetchQuotesFromServer();
                 });
                 pagesListLayout.addView(button);
                 i++;
@@ -106,16 +113,38 @@ public class QuotesFragment extends Fragment {
                 Button button = setPageButton(String.valueOf(i));
                 button.setLayoutParams(params);
                 button.setOnClickListener(v -> {
-                    viewModel.setOptions("page", v.getTag().toString());
+                    viewModel.addOption("page", v.getTag().toString());
+                    viewModel.fetchQuotesFromServer();
                 });
                 pagesListLayout.addView(button);
                 if ( i == 5) i = totalPages;
                 else i++;
             }
-            Button button = setPageButton(String.valueOf(i));
+            Button button = setPageButton("...");
             button.setLayoutParams(params);
             button.setOnClickListener(v -> {
-                //TODO: create custom page number
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Set page number");
+
+
+                final EditText input = new EditText(getContext());
+                input.setInputType(InputType.TYPE_CLASS_NUMBER);
+                builder.setView(input);
+
+                builder.setPositiveButton("OK", (dialog, which) -> {
+                    if (Integer.parseInt(input.getText().toString()) > totalPages){
+                        Toast.makeText(getContext(), "The max amount is " + totalPages, Toast.LENGTH_LONG).show();
+                    } else {
+                        viewModel.addOption("page", input.getText().toString());
+                        viewModel.fetchQuotesFromServer();
+                    }
+                });
+
+                builder.setNegativeButton("Cancel", ((dialog, which) -> dialog.cancel()));
+
+                builder.show();
+
             });
             pagesListLayout.addView(button);
         }
