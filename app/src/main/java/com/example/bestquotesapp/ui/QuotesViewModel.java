@@ -20,19 +20,19 @@ import java.util.Objects;
 public class QuotesViewModel extends ViewModel {
 
     private final QuotesRepository repository;
-    private MutableLiveData<QuotesResponse> quotes;
+    private final MutableLiveData<QuotesResponse> quotes;
     private final MutableLiveData<Map<String, String>> options;
 
     public QuotesViewModel(){
         repository = QuotesRepository.getInstance();
         options = new MutableLiveData<>();
         options.setValue(new HashMap<>());
+        quotes = new MutableLiveData<>();
     }
 
     public LiveData<QuotesResponse> getQuotes(){
-        if (quotes == null){
-            Log.i("QUOTES ARE: ", "NULL");
-            quotes = repository.getQuotesWithoutOptions();
+        if (quotes.getValue() == null){
+            new QuotesAsyncTask().execute();
         }
         return quotes;
     }
@@ -43,8 +43,9 @@ public class QuotesViewModel extends ViewModel {
 
     public void setOptions(String key, String value){
         Objects.requireNonNull(options.getValue()).put(key, value);
-        new QuotesAsyncTask().execute(options.getValue());
+        new QuotesAsyncTask().execute();
     }
+
     public LiveData<Map<String, String>> getOptions(){ return options; }
 
     public void clearOptions(){
@@ -52,13 +53,13 @@ public class QuotesViewModel extends ViewModel {
     }
 
 
-    class QuotesAsyncTask extends AsyncTask<Map<String, String>, Void, Void>{
+    class QuotesAsyncTask extends AsyncTask<Void, Void, Void>{
 
         @SafeVarargs
         @Override
-        protected final Void doInBackground(Map<String, String>... optionsMap) {
+        protected final Void doInBackground(Void... voids) {
             try {
-                QuotesResponse quotesResponse = repository.getQuotes(optionsMap[0]);
+                QuotesResponse quotesResponse = repository.getQuotes(options.getValue());
                 if (quotesResponse != null)
                     setQuotes(quotesResponse);
                 else Log.i("FAILED: ", "QUOTES RESPONSE IS NULL!");
@@ -67,5 +68,6 @@ public class QuotesViewModel extends ViewModel {
             }
             return null;
         }
+
     }
 }

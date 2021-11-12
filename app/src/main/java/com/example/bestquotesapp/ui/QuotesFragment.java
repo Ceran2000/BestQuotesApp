@@ -38,8 +38,6 @@ public class QuotesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i("FRAGMENT: ", "onCreate");
-
     }
 
     @Override
@@ -55,7 +53,6 @@ public class QuotesFragment extends Fragment {
         viewModel.getQuotes().observe(getViewLifecycleOwner(), quotes ->{
             if (quotes != null) {
                 if (quotes.getCount() != 0) {
-                    Log.i("GENEROWANIE CYTATOW: ", quotes.getResults().get(0).toString());
                     generateQuotesList(quotes.getResults());
                     generatePages();
                 }
@@ -72,7 +69,6 @@ public class QuotesFragment extends Fragment {
     }
 
     private void setListeners(){
-
         fab.setOnClickListener(v -> {
             new FilterDialogFragment().show(getChildFragmentManager(), FilterDialogFragment.TAG);
         });
@@ -94,48 +90,42 @@ public class QuotesFragment extends Fragment {
 
         int i = 1;
         if ( totalPages > 1 && totalPages <= 5 ) {
-            Log.i("WESZLISMY W IFA: ", "1");
             params.weight = 1.0f / totalPages;
             while ( i <= totalPages ){
-                Button button = new Button(getContext());
-                button.setTag(i);
-                button.setText(String.valueOf(i));
-                button.setWidth(0);
+                Button button = setPageButton(String.valueOf(i));
                 button.setLayoutParams(params);
                 button.setOnClickListener(v -> {
-                    Log.i("PAGE: ", button.getTag().toString());
                     viewModel.setOptions("page", v.getTag().toString());
                 });
                 pagesListLayout.addView(button);
                 i++;
             }
         } else if ( totalPages > 5){
-            Log.i("WESZLISMY W IFA: ", "2");
             params.weight = 1.0f / 7.0f;
             while ( i <= totalPages ){
-                Button button = new Button(getContext());
-                button.setTag(i);
-                button.setText(String.valueOf(i));
-                button.setWidth(0);
+                Button button = setPageButton(String.valueOf(i));
                 button.setLayoutParams(params);
                 button.setOnClickListener(v -> {
-                    Log.i("PAGE: ", button.getTag().toString());
                     viewModel.setOptions("page", v.getTag().toString());
                 });
                 pagesListLayout.addView(button);
-                Log.i("CREATED PAGE: ", String.valueOf(i));
                 if ( i == 5) i = totalPages;
                 else i++;
             }
-            Button button = new Button(getContext());
-            button.setTag("...");
-            button.setText("...");
-            button.setWidth(0);
+            Button button = setPageButton(String.valueOf(i));
             button.setLayoutParams(params);
             button.setOnClickListener(v -> {
-                Log.i("PAGE: ", button.getTag().toString());
+                //TODO: create custom page number
             });
             pagesListLayout.addView(button);
         }
+    }
+
+    private Button setPageButton(String page){
+        Button button = new Button(getContext());
+        button.setTag(page);
+        button.setText(page);
+        button.setWidth(0);
+        return button;
     }
 }
