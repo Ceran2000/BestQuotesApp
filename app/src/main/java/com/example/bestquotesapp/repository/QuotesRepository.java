@@ -13,8 +13,11 @@ import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
+import rx.Observable;
 
 public class QuotesRepository {
+
+    private final QuotableAPI quotesApi;
 
     private static QuotesRepository quotesRepository;
     public static QuotesRepository getInstance(){
@@ -24,14 +27,11 @@ public class QuotesRepository {
         return quotesRepository;
     }
 
-    private final QuotableAPI quotesApi;
-
     public QuotesRepository(){
         quotesApi = APIClient.getRetrofitInstance().create(QuotableAPI.class);
     }
 
-    public QuotesResponse getQuotes(Map<String, String> options) throws IOException {
-        Call<QuotesResponse> call = quotesApi.getQuotesResponse(options);
-        return call.execute().body();
+    public Observable<QuotesResponse> getQuotes(Map<String, String> options){
+        return quotesApi.getQuotesResponse(options);
     }
 }

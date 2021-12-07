@@ -157,4 +157,10 @@ public class QuotesFragment extends Fragment {
         button.setWidth(0);
         return button;
     }
+
+    @Override
+    public void onDestroy() {
+        viewModel.unSubscribe();
+        super.onDestroy();
+    }
 }

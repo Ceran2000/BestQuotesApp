@@ -17,11 +17,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import rx.Subscriber;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
 public class QuotesViewModel extends ViewModel {
 
     private final QuotesRepository repository;
     private final MutableLiveData<QuotesResponse> quotes;
     private final MutableLiveData<Map<String, String>> options;
+
+    private Subscription subscription;
 
     public QuotesViewModel(){
         repository = QuotesRepository.getInstance();
@@ -39,7 +46,27 @@ public class QuotesViewModel extends ViewModel {
     }
 
     public void fetchQuotesFromServer(){
-        new QuotesAsyncTask().execute();
+        subscription = repository
+                .getQuotes(options.getValue())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<QuotesResponse>() {
+                    @Override
+                    public void onCompleted() {
+                        Log.d("VIEW MODEL", "onCompleted()");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d("VIEW MODEL", "onError()");
+                    }
+
+                    @Override
+                    public void onNext(QuotesResponse quotesResponse) {
+                        Log.d("VIEW MODEL", "onNext()");
+                        quotes.postValue(quotesResponse);
+                    }
+                });
     }
 
     public LiveData<Map<String, String>> getOptions(){
@@ -56,20 +83,9 @@ public class QuotesViewModel extends ViewModel {
             options.getValue().clear();
     }
 
-    private class QuotesAsyncTask extends AsyncTask<Void, Void, Void>{
-
-        @SafeVarargs
-        @Override
-        protected final Void doInBackground(Void... voids) {
-            try {
-                QuotesResponse quotesResponse = repository.getQuotes(options.getValue());
-                if (quotesResponse != null)
-                    quotes.postValue(quotesResponse);
-                else Log.i("FAILED: ", "QUOTES RESPONSE IS NULL!");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
+    public void unSubscribe() {
+        if (subscription != null && !subscription.isUnsubscribed()) {
+            subscription.unsubscribe();
         }
     }
 }

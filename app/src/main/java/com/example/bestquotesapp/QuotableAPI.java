@@ -8,15 +8,16 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 import retrofit2.http.QueryMap;
+import rx.Observable;
 
 
 public interface QuotableAPI {
 
-    @GET("/quotes")
-    Call<QuotesResponse> getQuotesResponse();
+    /*@GET("/quotes")
+    Call<QuotesResponse> getQuotesResponse();*/
 
     @GET("/quotes")
-    Call<QuotesResponse> getQuotesResponse(
+    Observable<QuotesResponse> getQuotesResponse(
             @QueryMap Map<String, String> options
     );
 
