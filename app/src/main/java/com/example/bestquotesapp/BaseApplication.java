@@ -1,9 +1,14 @@
 package com.example.bestquotesapp;
 
+
+
+
+
 import com.example.bestquotesapp.di.DaggerAppComponent;
 
 import dagger.android.AndroidInjector;
 import dagger.android.DaggerApplication;
+
 
 public class BaseApplication extends DaggerApplication {
     @Override
@@ -11,3 +16,4 @@ public class BaseApplication extends DaggerApplication {
         return DaggerAppComponent.builder().application(this).build();
     }
 }
+

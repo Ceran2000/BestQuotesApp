@@ -2,17 +2,15 @@ package com.example.bestquotesapp.ui;
 
 import android.os.Bundle;
 
-import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 
@@ -21,22 +19,27 @@ import com.example.bestquotesapp.R;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.inject.Inject;
 
-public class FilterDialogFragment extends DialogFragment {
+import dagger.android.support.DaggerDialogFragment;
+
+
+public class FilterDialogFragment extends DaggerDialogFragment {
 
     private Button searchByAuthorBtn;
     private EditText etAuthor;
-    private QuotesViewModel viewModel;
     private Spinner spinner;
     private RadioGroup radioGroup;
     private HashMap<Integer, String> spinnerMap;
     private String order;
 
+    @Inject
+    ViewModelFactory viewModelFactory;
+
+    private QuotesViewModel viewModel;
+
     public static String TAG = "FilterDialog";
 
-    public FilterDialogFragment() {
-        super(R.layout.fragment_filter_dialog);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -47,7 +50,7 @@ public class FilterDialogFragment extends DialogFragment {
         setListeners();
         setSpinner();
 
-        viewModel = new ViewModelProvider(requireActivity()).get(QuotesViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity(), viewModelFactory).get(QuotesViewModel.class);
 
         return root;
     }
@@ -61,17 +64,14 @@ public class FilterDialogFragment extends DialogFragment {
 
     private void setListeners(){
 
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId){
-                    case R.id.radio_asc:
-                        order = "asc";
-                        break;
-                    case R.id.radio_desc:
-                        order = "desc";
-                        break;
-                }
+        radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            switch (checkedId){
+                case R.id.radio_asc:
+                    order = "asc";
+                    break;
+                case R.id.radio_desc:
+                    order = "desc";
+                    break;
             }
         });
 

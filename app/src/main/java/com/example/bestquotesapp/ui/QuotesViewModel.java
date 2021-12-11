@@ -1,22 +1,24 @@
 package com.example.bestquotesapp.ui;
 
-import android.annotation.SuppressLint;
-import android.os.AsyncTask;
+
 import android.util.Log;
-import android.widget.Toast;
+
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.bestquotesapp.QuotableAPI;
 import com.example.bestquotesapp.models.QuotesResponse;
 import com.example.bestquotesapp.repository.QuotesRepository;
 
-import java.io.IOException;
+
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
+import javax.inject.Inject;
+
+import retrofit2.Retrofit;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -24,28 +26,35 @@ import rx.schedulers.Schedulers;
 
 public class QuotesViewModel extends ViewModel {
 
-    private final QuotesRepository repository;
+    private static final String TAG = "QuotesViewModel:";
+
+    //@Inject
+    QuotesRepository repository;
+    private Subscription subscription;
+
     private final MutableLiveData<QuotesResponse> quotes;
     private final MutableLiveData<Map<String, String>> options;
 
-    private Subscription subscription;
-
-    public QuotesViewModel(){
-        repository = QuotesRepository.getInstance();
+    @Inject
+    public QuotesViewModel(
+          //  QuotesRepository repository
+    ) {
+        //this.repository = repository;
         options = new MutableLiveData<>();
         options.setValue(new HashMap<>());
         quotes = new MutableLiveData<>();
 
+        Log.d(TAG, "QuotesViewModel created...");
     }
 
-    public LiveData<QuotesResponse> getQuotes(){
-        if (quotes.getValue() == null){
+    public LiveData<QuotesResponse> getQuotes() {
+        if (quotes.getValue() == null) {
             fetchQuotesFromServer();
         }
         return quotes;
     }
 
-    public void fetchQuotesFromServer(){
+    public void fetchQuotesFromServer() {
         subscription = repository
                 .getQuotes(options.getValue())
                 .subscribeOn(Schedulers.io())
@@ -69,16 +78,16 @@ public class QuotesViewModel extends ViewModel {
                 });
     }
 
-    public LiveData<Map<String, String>> getOptions(){
+    public LiveData<Map<String, String>> getOptions() {
         return options;
     }
 
-    public void addOption(String key, String value){
+    public void addOption(String key, String value) {
         if (options.getValue() != null)
             options.getValue().put(key, value);
     }
 
-    public void clearOptions(){
+    public void clearOptions() {
         if (options.getValue() != null)
             options.getValue().clear();
     }

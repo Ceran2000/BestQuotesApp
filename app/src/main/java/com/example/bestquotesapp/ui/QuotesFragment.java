@@ -1,19 +1,17 @@
 package com.example.bestquotesapp.ui;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
+
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
+
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.renderscript.ScriptGroup;
+
 import android.text.InputType;
-import android.util.Log;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,17 +27,22 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.List;
 import java.util.Objects;
 
+import javax.inject.Inject;
 
-public class QuotesFragment extends Fragment {
+import dagger.android.support.DaggerFragment;
+
+
+public class QuotesFragment extends DaggerFragment {
 
     private RecyclerView recyclerView;
     private FloatingActionButton fab;
     private LinearLayout pagesListLayout;
+
+    @Inject
+    ViewModelFactory viewModelFactory;
+
     private QuotesViewModel viewModel;
 
-    public QuotesFragment() {
-        super(R.layout.fragment_quotes);
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,8 +58,8 @@ public class QuotesFragment extends Fragment {
         findViews(root);
         setListeners();
 
-        viewModel = new ViewModelProvider(requireActivity()).get(QuotesViewModel.class);
-        viewModel.getQuotes().observe(getViewLifecycleOwner(), quotes ->{
+        viewModel = new ViewModelProvider(requireActivity(), viewModelFactory).get(QuotesViewModel.class);
+        viewModel.getQuotes().observe(getViewLifecycleOwner(), quotes -> {
             if (quotes != null) {
                 if (quotes.getCount() != 0) {
                     generateQuotesList(quotes.getResults());
@@ -68,13 +71,13 @@ public class QuotesFragment extends Fragment {
         return root;
     }
 
-    private void findViews(View root){
+    private void findViews(View root) {
         recyclerView = root.findViewById(R.id.recyclerViewQuotes);
         fab = root.findViewById(R.id.fab);
         pagesListLayout = root.findViewById(R.id.pagesListLayout);
     }
 
-    private void setListeners(){
+    private void setListeners() {
         fab.setOnClickListener(v -> {
             new FilterDialogFragment().show(getChildFragmentManager(), FilterDialogFragment.TAG);
         });
@@ -87,7 +90,7 @@ public class QuotesFragment extends Fragment {
         recyclerView.setAdapter(quotesAdapter);
     }
 
-    private void generatePages(){
+    private void generatePages() {
         pagesListLayout.removeAllViews();
         int totalPages = Objects.requireNonNull(viewModel.getQuotes().getValue()).getTotalPages();
 
@@ -95,9 +98,9 @@ public class QuotesFragment extends Fragment {
                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
 
         int i = 1;
-        if ( totalPages > 1 && totalPages <= 5 ) {
+        if (totalPages > 1 && totalPages <= 5) {
             params.weight = 1.0f / totalPages;
-            while ( i <= totalPages ){
+            while (i <= totalPages) {
                 Button button = setPageButton(String.valueOf(i));
                 button.setLayoutParams(params);
                 button.setOnClickListener(v -> {
@@ -107,9 +110,9 @@ public class QuotesFragment extends Fragment {
                 pagesListLayout.addView(button);
                 i++;
             }
-        } else if ( totalPages > 5){
+        } else if (totalPages > 5) {
             params.weight = 1.0f / 7.0f;
-            while ( i <= totalPages ){
+            while (i <= totalPages) {
                 Button button = setPageButton(String.valueOf(i));
                 button.setLayoutParams(params);
                 button.setOnClickListener(v -> {
@@ -117,7 +120,7 @@ public class QuotesFragment extends Fragment {
                     viewModel.fetchQuotesFromServer();
                 });
                 pagesListLayout.addView(button);
-                if ( i == 5) i = totalPages;
+                if (i == 5) i = totalPages;
                 else i++;
             }
             Button button = setPageButton("...");
@@ -133,7 +136,7 @@ public class QuotesFragment extends Fragment {
                 builder.setView(input);
 
                 builder.setPositiveButton("OK", (dialog, which) -> {
-                    if (Integer.parseInt(input.getText().toString()) > totalPages){
+                    if (Integer.parseInt(input.getText().toString()) > totalPages) {
                         Toast.makeText(getContext(), "The max amount is " + totalPages, Toast.LENGTH_LONG).show();
                     } else {
                         viewModel.addOption("page", input.getText().toString());
@@ -150,7 +153,7 @@ public class QuotesFragment extends Fragment {
         }
     }
 
-    private Button setPageButton(String page){
+    private Button setPageButton(String page) {
         Button button = new Button(getContext());
         button.setTag(page);
         button.setText(page);

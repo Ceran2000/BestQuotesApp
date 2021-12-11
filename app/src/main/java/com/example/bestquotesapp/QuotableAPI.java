@@ -13,9 +13,6 @@ import rx.Observable;
 
 public interface QuotableAPI {
 
-    /*@GET("/quotes")
-    Call<QuotesResponse> getQuotesResponse();*/
-
     @GET("/quotes")
     Observable<QuotesResponse> getQuotesResponse(
             @QueryMap Map<String, String> options
